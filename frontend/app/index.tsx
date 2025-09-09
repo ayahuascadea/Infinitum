@@ -304,6 +304,35 @@ export default function BTCRecoveryApp() {
         />
       </View>
 
+      <View style={styles.configSection}>
+        <View style={styles.demoModeContainer}>
+          <Text style={styles.configLabel}>Search Mode</Text>
+          <View style={styles.modeToggleContainer}>
+            <TouchableOpacity
+              style={[styles.modeToggle, demoMode && styles.activeModeToggle]}
+              onPress={() => setDemoMode(true)}
+            >
+              <Text style={[styles.modeToggleText, demoMode && styles.activeModeToggleText]}>
+                ⚡ Fast Demo
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modeToggle, !demoMode && styles.activeModeToggle]}
+              onPress={() => setDemoMode(false)}
+            >
+              <Text style={[styles.modeToggleText, !demoMode && styles.activeModeToggleText]}>
+                🔗 Real Blockchain
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.modeDescription}>
+            {demoMode 
+              ? "💨 Fast mode - Quick results to see real-time features!" 
+              : "🔍 Real mode - Queries actual Bitcoin blockchain (slower)"}
+          </Text>
+        </View>
+      </View>
+
       <TouchableOpacity
         style={[styles.startButton, isRecovering && styles.disabledButton]}
         onPress={startRecovery}
