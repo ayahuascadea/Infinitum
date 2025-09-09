@@ -72,6 +72,11 @@ export default function BTCRecoveryApp() {
           const resultsData = await resultsResponse.json();
           const newResults = resultsData.results || [];
           
+          // Get real-time logs for terminal view
+          const logsResponse = await fetch(`${BACKEND_URL}/api/logs/${currentSession}`);
+          const logsData = await logsResponse.json();
+          setSessionLogs(logsData.logs || []);
+          
           // Check if new wallets were found
           if (newResults.length > previousResultsCount.current) {
             console.log(`🎉 NEW WALLET FOUND! Total: ${newResults.length}`);
