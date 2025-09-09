@@ -105,6 +105,8 @@ export default function BTCRecoveryApp() {
 
   const startRecovery = async () => {
     try {
+      console.log('🚀 Starting recovery...');
+      
       const sessionData: RecoverySession = {
         session_id: "temp-id", // Backend will overwrite this
         known_words: knownWords,
@@ -114,6 +116,9 @@ export default function BTCRecoveryApp() {
         status: "pending"
       };
 
+      console.log('📡 Sending request to:', `${BACKEND_URL}/api/start-recovery`);
+      console.log('📋 Session data:', sessionData);
+
       const response = await fetch(`${BACKEND_URL}/api/start-recovery`, {
         method: 'POST',
         headers: {
@@ -122,15 +127,25 @@ export default function BTCRecoveryApp() {
         body: JSON.stringify(sessionData)
       });
 
+      console.log('📊 Response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
+      console.log('✅ Recovery started! Session ID:', data.session_id);
+      
       setCurrentSession(data.session_id);
       setIsRecovering(true);
       setResults([]);
       setSessionStatus(null);
       setActiveTab('progress');
+      
+      Alert.alert('Success', `Recovery started! Session ID: ${data.session_id.substring(0, 8)}...`);
     } catch (error) {
-      console.error('Error starting recovery:', error);
-      Alert.alert('Error', 'Error starting recovery. Please check console for details.');
+      console.error('❌ Error starting recovery:', error);
+      Alert.alert('Error', `Failed to start recovery: ${error.message}`);
     }
   };
 
