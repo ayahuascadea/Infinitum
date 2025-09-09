@@ -477,6 +477,28 @@ async def test_wallet_found():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# Global log storage for real-time terminal view
+session_logs = {}
+
+def add_session_log(session_id: str, message: str):
+    """Add a log message for real-time terminal display"""
+    if session_id not in session_logs:
+        session_logs[session_id] = []
+    
+    timestamp = time.strftime("%H:%M:%S", time.localtime())
+    log_entry = f"[{timestamp}] {message}"
+    session_logs[session_id].append(log_entry)
+    
+    # Keep only last 50 log entries per session
+    if len(session_logs[session_id]) > 50:
+        session_logs[session_id] = session_logs[session_id][-50:]
+
+@app.get("/api/logs/{session_id}")
+async def get_session_logs(session_id: str):
+    """Get real-time logs for terminal display"""
+    logs = session_logs.get(session_id, [])
+    return {"logs": logs}
+
 @app.get("/api/health")
 async def health_check():
     return {
