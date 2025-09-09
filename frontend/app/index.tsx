@@ -52,6 +52,7 @@ export default function BTCRecoveryApp() {
   const [wordValidation, setWordValidation] = useState<{ [key: string]: boolean }>({});
   const [activeTab, setActiveTab] = useState<'setup' | 'progress' | 'results'>('setup');
   const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [demoMode, setDemoMode] = useState<boolean>(true); // Default to demo mode for faster testing
   const previousResultsCount = useRef<number>(0);
 
   // Real-time results polling (faster when actively recovering)
