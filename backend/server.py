@@ -425,6 +425,35 @@ async def get_bip39_wordlist():
     """Get the REAL BIP39 word list"""
     return {"words": BIP39_WORDS[:100]}  # Return first 100 for UI performance
 
+@app.post("/api/test-wallet-found")
+async def test_wallet_found():
+    """Test endpoint to simulate finding a wallet (for demonstration)"""
+    try:
+        # Create a test result
+        test_result = {
+            "session_id": "demo-session",
+            "mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+            "addresses": {
+                "legacy": "1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA",
+                "segwit": "3HkzTaLTbEMWeJPLyNCNhPyGfZsVLDwdD3G",
+                "native_segwit": "bc1qd986ed01b7a22225a70edbf2ba7cfb63a15cb3aa"
+            },
+            "balances": {
+                "legacy": 1.25463782,
+                "segwit": 0.00000000,
+                "native_segwit": 0.50123456
+            },
+            "total_balance": 1.75587238,
+            "found_at": 42
+        }
+        
+        # Store test result
+        await db.results.insert_one(test_result)
+        
+        return {"status": "success", "message": "Test wallet created for real-time demo"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/health")
 async def health_check():
     return {
