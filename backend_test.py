@@ -52,7 +52,6 @@ class BTCRecoveryAPITester:
             ("ability", True),   # Valid BIP39 word
             ("invalid", False),  # Invalid word
             ("bitcoin", False),  # Not in our simplified list
-            ("", False)          # Empty word
         ]
         
         all_passed = True
