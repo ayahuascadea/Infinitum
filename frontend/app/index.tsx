@@ -1019,4 +1019,38 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontWeight: '500',
   },
+  demoModeContainer: {
+    marginTop: 10,
+  },
+  modeToggleContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
+    padding: 4,
+    marginBottom: 8,
+  },
+  modeToggle: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  activeModeToggle: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  modeToggleText: {
+    color: '#a0a0a0',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  activeModeToggleText: {
+    color: '#fff',
+  },
+  modeDescription: {
+    color: '#a0a0a0',
+    fontSize: 12,
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
 });
