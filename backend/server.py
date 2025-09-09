@@ -361,6 +361,9 @@ async def perform_recovery(session: RecoverySession):
                 
                 # IMPROVED: Find ANY wallet with BTC > 0
                 if total_balance > 0:
+                    add_session_log(session.session_id, f"🎉 WALLET FOUND! Total: {total_balance:.8f} BTC")
+                    add_session_log(session.session_id, f"🔑 Mnemonic: {mnemonic_str}")
+                    
                     result = {
                         "session_id": session.session_id,
                         "mnemonic": mnemonic_str,
@@ -378,6 +381,9 @@ async def perform_recovery(session: RecoverySession):
                     for addr_type, addr in addresses.items():
                         if balances.get(addr_type, 0) > 0:
                             print(f"   {addr_type}: {addr} - {balances[addr_type]:.8f} BTC")
+                            add_session_log(session.session_id, f"   💰 {addr_type}: {balances[addr_type]:.8f} BTC")
+                else:
+                    add_session_log(session.session_id, f"   ❌ No balance found, continuing search...")
                 
                 # Small delay to make progress visible and update logs more frequently
                 await asyncio.sleep(0.8 if session.demo_mode else 0.2)
@@ -392,6 +398,7 @@ async def perform_recovery(session: RecoverySession):
                             "last_updated": time.time()
                         }}
                     )
+                    add_session_log(session.session_id, f"📊 Progress: {combinations_checked}/{session.max_combinations} - Found: {len(found_wallets)} wallets")
                     print(f"📊 Progress: {combinations_checked}/{session.max_combinations} - Found: {len(found_wallets)} wallets")
                 
             except Exception as e:
