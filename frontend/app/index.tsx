@@ -728,4 +728,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  sessionDebugText: {
+    color: '#666',
+    fontSize: 12,
+    fontFamily: 'monospace',
+    marginTop: 10,
+  },
 });
