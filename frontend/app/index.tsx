@@ -1098,4 +1098,57 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',
   },
+  terminalCard: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    borderRadius: 12,
+    marginTop: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  terminalHeader: {
+    backgroundColor: '#2d2d2d',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+  },
+  terminalTitle: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  terminalButtons: {
+    flexDirection: 'row',
+  },
+  terminalButton: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#ff5f56',
+    marginLeft: 8,
+  },
+  terminalContent: {
+    height: 200,
+    padding: 12,
+  },
+  terminalLine: {
+    color: '#00ff00',
+    fontSize: 12,
+    fontFamily: 'monospace',
+    marginBottom: 2,
+    flexWrap: 'wrap',
+  },
+  terminalCursor: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  terminalCursorText: {
+    color: '#00ff00',
+    fontSize: 12,
+    fontFamily: 'monospace',
+  },
 });
