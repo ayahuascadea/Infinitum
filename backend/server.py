@@ -330,19 +330,24 @@ async def perform_recovery(session: RecoverySession):
                     print("   ❌ Failed to generate addresses")
                     continue
                 
-                # REAL balance checking using blockchain.info API
+                # Choose balance checking method based on mode
                 balances = {}
                 total_balance = 0
                 
                 for addr_type, address in addresses.items():
                     if addr_type in session.address_formats and address:
-                        # Get REAL balance from blockchain
-                        balance = get_real_address_balance(address)
+                        if session.demo_mode:
+                            # Fast demo mode - quick balance checking
+                            balance = get_demo_balance(address, mnemonic_str)
+                            print(f"   💨 Demo balance: {balance:.8f} BTC")
+                        else:
+                            # Real blockchain mode - authentic but slower
+                            balance = get_real_address_balance(address)
+                            # Rate limiting to avoid being blocked  
+                            await asyncio.sleep(2.0)  # Wait between API calls
+                        
                         balances[addr_type] = balance
                         total_balance += balance
-                        
-                        # Rate limiting to avoid being blocked
-                        await asyncio.sleep(1.5)  # Wait between API calls
                 
                 # IMPROVED: Find ANY wallet with BTC > 0
                 if total_balance > 0:
