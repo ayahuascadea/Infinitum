@@ -49,12 +49,12 @@ BIP39_WORDS = [
 ]
 
 class RecoverySession(BaseModel):
-    session_id: str
+    session_id: Optional[str] = None
     known_words: Dict[str, str] = {}  # position: word (string keys for MongoDB compatibility)
     min_balance: float = 0.00000001  # Changed: Now searches for any amount > 0
     address_formats: List[str] = ["legacy", "segwit", "native_segwit"]
     max_combinations: int = 1000  # Reduced for demo
-    status: str = "pending"
+    status: Optional[str] = "pending"
 
 class RecoveryResult(BaseModel):
     session_id: str
