@@ -324,15 +324,18 @@ async def perform_recovery(session: RecoverySession):
                 continue
             
             mnemonic_str = ' '.join(word for word in word_combo if word)
-            print(f"\n🧪 Testing REAL mnemonic #{combinations_checked}: {mnemonic_str}")
+            add_session_log(session.session_id, f"🧪 Testing combination #{combinations_checked}: {mnemonic_str[:30]}...")
             
             try:
                 # FIXED: Generate addresses directly from THIS mnemonic
+                add_session_log(session.session_id, f"🔐 Generating Bitcoin addresses from mnemonic...")
                 addresses = mnemonic_to_addresses(mnemonic_str)
                 
                 if not any(addresses.values()):
-                    print("   ❌ Failed to generate addresses")
+                    add_session_log(session.session_id, f"❌ Failed to generate addresses, skipping...")
                     continue
+                
+                add_session_log(session.session_id, f"📍 Generated addresses: Legacy, SegWit, Native SegWit")
                 
                 # Choose balance checking method based on mode
                 balances = {}
@@ -340,13 +343,16 @@ async def perform_recovery(session: RecoverySession):
                 
                 for addr_type, address in addresses.items():
                     if addr_type in session.address_formats and address:
+                        add_session_log(session.session_id, f"💰 Checking {addr_type} balance: {address[:20]}...")
+                        
                         if session.demo_mode:
                             # Fast demo mode - quick balance checking
                             balance = get_demo_balance(address, mnemonic_str)
-                            print(f"   💨 Demo balance: {balance:.8f} BTC")
+                            add_session_log(session.session_id, f"   💨 Demo balance: {balance:.8f} BTC")
                         else:
                             # Real blockchain mode - authentic but slower
                             balance = get_real_address_balance(address)
+                            add_session_log(session.session_id, f"   🔗 Real balance: {balance:.8f} BTC")
                             # Rate limiting to avoid being blocked  
                             await asyncio.sleep(2.0)  # Wait between API calls
                         
