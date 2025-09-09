@@ -106,6 +106,7 @@ export default function BTCRecoveryApp() {
   const startRecovery = async () => {
     try {
       console.log('🚀 Starting recovery...');
+      console.log('📡 Backend URL:', BACKEND_URL);
       
       const sessionData: RecoverySession = {
         session_id: "temp-id", // Backend will overwrite this
@@ -116,7 +117,6 @@ export default function BTCRecoveryApp() {
         status: "pending"
       };
 
-      console.log('📡 Sending request to:', `${BACKEND_URL}/api/start-recovery`);
       console.log('📋 Session data:', sessionData);
 
       const response = await fetch(`${BACKEND_URL}/api/start-recovery`, {
@@ -128,13 +128,16 @@ export default function BTCRecoveryApp() {
       });
 
       console.log('📊 Response status:', response.status);
+      console.log('📊 Response OK:', response.ok);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ Response error:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
 
       const data = await response.json();
-      console.log('✅ Recovery started! Session ID:', data.session_id);
+      console.log('✅ Recovery started! Response:', data);
       
       setCurrentSession(data.session_id);
       setIsRecovering(true);
@@ -142,10 +145,10 @@ export default function BTCRecoveryApp() {
       setSessionStatus(null);
       setActiveTab('progress');
       
-      Alert.alert('Success', `Recovery started! Session ID: ${data.session_id.substring(0, 8)}...`);
+      Alert.alert('Success!', `Recovery started!\nSession ID: ${data.session_id.substring(0, 8)}...\n\nSwitch to Progress tab to see live updates.`);
     } catch (error) {
       console.error('❌ Error starting recovery:', error);
-      Alert.alert('Error', `Failed to start recovery: ${error.message}`);
+      Alert.alert('Recovery Error', `Failed to start recovery:\n\n${error.message}\n\nPlease check your connection and try again.`);
     }
   };
 
