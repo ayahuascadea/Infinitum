@@ -414,6 +414,45 @@ export default function BTCRecoveryApp() {
               </View>
             )}
           </View>
+
+          {/* NEW: Real-time Terminal View */}
+          <View style={styles.terminalCard}>
+            <View style={styles.terminalHeader}>
+              <Text style={styles.terminalTitle}>🖥️ Live Command Line</Text>
+              <View style={styles.terminalButtons}>
+                <View style={styles.terminalButton} />
+                <View style={styles.terminalButton} />
+                <View style={styles.terminalButton} />
+              </View>
+            </View>
+            <ScrollView 
+              style={styles.terminalContent}
+              showsVerticalScrollIndicator={false}
+              ref={(ref) => {
+                // Auto-scroll to bottom when new logs appear
+                if (ref && sessionLogs.length > 0) {
+                  setTimeout(() => ref.scrollToEnd({ animated: true }), 100);
+                }
+              }}
+            >
+              {sessionLogs.length > 0 ? (
+                sessionLogs.map((log, index) => (
+                  <Text key={index} style={styles.terminalLine}>
+                    {log}
+                  </Text>
+                ))
+              ) : (
+                <Text style={styles.terminalLine}>
+                  [00:00:00] 🚀 BTC Recovery Terminal Ready...
+                </Text>
+              )}
+              {isRecovering && (
+                <View style={styles.terminalCursor}>
+                  <Text style={styles.terminalCursorText}>█</Text>
+                </View>
+              )}
+            </ScrollView>
+          </View>
         </>
       ) : (
         <View style={styles.emptyState}>
