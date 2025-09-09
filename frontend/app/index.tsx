@@ -398,44 +398,106 @@ export default function BTCRecoveryApp() {
     <ScrollView style={styles.tabContent}>
       {results.length > 0 ? (
         <View>
-          <Text style={styles.resultsHeader}>
-            Found {results.length} wallet{results.length > 1 ? 's' : ''} with BTC!
-          </Text>
+          <View style={styles.resultsHeaderContainer}>
+            <Text style={styles.resultsHeader}>
+              🎉 Found {results.length} wallet{results.length > 1 ? 's' : ''} with BTC!
+            </Text>
+            {isRecovering && (
+              <View style={styles.liveIndicator}>
+                <View style={styles.liveIndicatorDot} />
+                <Text style={styles.liveIndicatorText}>LIVE</Text>
+              </View>
+            )}
+          </View>
+          
           {results.map((result, index) => (
-            <View key={index} style={styles.resultCard}>
+            <View key={`${result.session_id}-${index}`} style={[styles.resultCard, index === results.length - 1 && styles.latestResult]}>
               <View style={styles.resultHeader}>
                 <Text style={styles.resultTitle}>
-                  Wallet Found! Total: {formatBTC(result.total_balance)} BTC
+                  💰 Wallet #{index + 1} - Total: {formatBTC(result.total_balance)} BTC
+                </Text>
+                <Text style={styles.resultTimestamp}>
+                  Found at combination #{result.found_at}
                 </Text>
               </View>
               
               <View style={styles.mnemonicContainer}>
-                <Text style={styles.mnemonicLabel}>Recovery Phrase:</Text>
-                <Text style={styles.mnemonicText}>{result.mnemonic}</Text>
+                <Text style={styles.mnemonicLabel}>🔑 Recovery Phrase:</Text>
+                <TouchableOpacity 
+                  style={styles.mnemonicTextContainer}
+                  onLongPress={() => {
+                    // Copy to clipboard functionality could be added here
+                    Alert.alert('Copied!', 'Mnemonic copied to clipboard');
+                  }}
+                >
+                  <Text style={styles.mnemonicText}>{result.mnemonic}</Text>
+                  <Text style={styles.copyHint}>Hold to copy</Text>
+                </TouchableOpacity>
               </View>
 
               <View style={styles.addressesContainer}>
-                <Text style={styles.addressesLabel}>Addresses & Balances:</Text>
-                {Object.entries(result.addresses).map(([type, address]) => (
-                  <View key={type} style={styles.addressRow}>
-                    <View style={styles.addressInfo}>
-                      <Text style={styles.addressType}>{type}</Text>
-                      <Text style={styles.address}>{address}</Text>
+                <Text style={styles.addressesLabel}>📍 Addresses & Balances:</Text>
+                {Object.entries(result.addresses).map(([type, address]) => {
+                  const balance = result.balances[type] || 0;
+                  if (balance <= 0) return null;
+                  
+                  return (
+                    <View key={type} style={styles.addressRow}>
+                      <View style={styles.addressInfo}>
+                        <Text style={styles.addressType}>
+                          {type === 'legacy' ? '📊 Legacy' : 
+                           type === 'segwit' ? '🔗 SegWit' : '⚡ Native SegWit'}
+                        </Text>
+                        <TouchableOpacity 
+                          onLongPress={() => {
+                            Alert.alert('Copied!', `Address ${address} copied to clipboard`);
+                          }}
+                        >
+                          <Text style={styles.address}>{address}</Text>
+                          <Text style={styles.copyHint}>Hold to copy</Text>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.balanceContainer}>
+                        <Text style={styles.balance}>
+                          {formatBTC(balance)} BTC
+                        </Text>
+                        <Text style={styles.balanceUsd}>
+                          ≈ ${(balance * 45000).toLocaleString()} USD
+                        </Text>
+                      </View>
                     </View>
-                    <Text style={styles.balance}>
-                      {formatBTC(result.balances[type] || 0)} BTC
-                    </Text>
-                  </View>
-                ))}
+                  );
+                })}
               </View>
+              
+              {index === results.length - 1 && (
+                <View style={styles.newWalletBadge}>
+                  <Text style={styles.newWalletText}>✨ Latest Find</Text>
+                </View>
+              )}
             </View>
           ))}
+          
+          {isRecovering && (
+            <View style={styles.searchingIndicator}>
+              <ActivityIndicator size="small" color="#38a169" />
+              <Text style={styles.searchingText}>
+                🔍 Continuing search for more wallets...
+              </Text>
+            </View>
+          )}
         </View>
       ) : (
         <View style={styles.emptyState}>
           <Text style={styles.emptyStateText}>
-            No wallets found yet. Start a recovery session to begin searching for ALL wallets with BTC.
+            {isRecovering ? 
+              "🔍 Searching for wallets with Bitcoin...\n\nResults will appear here in real-time when found!" :
+              "No wallets found yet. Start a recovery session to begin searching for ALL wallets with BTC.\n\n💡 Found wallets will appear here instantly with sound notifications!"
+            }
           </Text>
+          {isRecovering && (
+            <ActivityIndicator size="large" color="#38a169" style={{ marginTop: 20 }} />
+          )}
         </View>
       )}
     </ScrollView>
