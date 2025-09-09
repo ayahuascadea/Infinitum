@@ -337,8 +337,8 @@ async def perform_recovery(session: RecoverySession):
                         
                         # IMPROVED: Continue searching for MORE wallets
                 
-                # Update progress every 10 combinations
-                if combinations_checked % 10 == 0:
+                # Update progress every 5 combinations (more frequent updates)
+                if combinations_checked % 5 == 0:
                     await db.sessions.update_one(
                         {"session_id": session.session_id},
                         {"$set": {
@@ -348,6 +348,9 @@ async def perform_recovery(session: RecoverySession):
                         }}
                     )
                     print(f"Progress: {combinations_checked}/{session.max_combinations} - Found: {len(found_wallets)} wallets")
+                    
+                    # Add a small delay to make progress visible
+                    await asyncio.sleep(0.5)
                 
             except Exception as e:
                 print(f"Error processing combination {combinations_checked}: {e}")
