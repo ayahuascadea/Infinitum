@@ -369,8 +369,11 @@ async def perform_recovery(session: RecoverySession):
                         if balances.get(addr_type, 0) > 0:
                             print(f"   {addr_type}: {addr} - {balances[addr_type]:.8f} BTC")
                 
-                # Update progress every 5 combinations
-                if combinations_checked % 5 == 0:
+                # Small delay to make progress visible and update logs more frequently
+                await asyncio.sleep(0.8 if session.demo_mode else 0.2)
+                
+                # Update progress every 2 combinations (more frequent for better terminal view)
+                if combinations_checked % 2 == 0:
                     await db.sessions.update_one(
                         {"session_id": session.session_id},
                         {"$set": {
