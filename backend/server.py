@@ -48,6 +48,7 @@ class RecoverySession(BaseModel):
     address_formats: List[str] = ["legacy", "segwit", "native_segwit"]
     max_combinations: int = 100
     status: str = "pending"
+    demo_mode: bool = False  # NEW: Fast demo mode for testing
 
 class RecoveryResult(BaseModel):
     session_id: str
