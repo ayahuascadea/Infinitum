@@ -304,6 +304,10 @@ async def perform_recovery(session: RecoverySession):
         combinations_checked = 0
         
         print(f"🔍 REAL Bitcoin recovery started for session: {session.session_id}")
+        add_session_log(session.session_id, f"🚀 Starting {'Fast Demo' if session.demo_mode else 'Real Blockchain'} recovery session")
+        add_session_log(session.session_id, f"📋 Known words: {len(session.known_words)} positions filled")
+        add_session_log(session.session_id, f"🎯 Max combinations: {session.max_combinations}")
+        add_session_log(session.session_id, f"🔍 Searching for wallets with ANY amount of BTC...")
         
         # Update session status
         await db.sessions.update_one(
