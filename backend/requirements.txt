@@ -6,4 +6,7 @@ requests==2.31.0
 pydantic==2.5.0
 base58==2.1.1
 secp256k1==0.14.0
+mnemonic==0.21
+base58==2.1.1
+secp256k1==0.14.0
 mnemonic==0.20
