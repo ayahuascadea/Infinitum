@@ -224,53 +224,69 @@ export default function BTCRecoveryApp() {
 
   const renderProgressTab = () => (
     <ScrollView style={styles.tabContent}>
-      {sessionStatus ? (
+      {sessionStatus || (currentSession && isRecovering) ? (
         <>
           <View style={styles.progressCard}>
             <Text style={styles.progressTitle}>Recovery Progress</Text>
             
-            <View style={styles.progressBarContainer}>
-              <View style={styles.progressBar}>
-                <View 
-                  style={[
-                    styles.progressFill, 
-                    { width: `${getProgressPercentage()}%` }
-                  ]} 
-                />
-              </View>
-              <Text style={styles.progressText}>
-                {sessionStatus.combinations_checked || 0} / {maxCombinations}
-              </Text>
-            </View>
+            {sessionStatus ? (
+              <>
+                <View style={styles.progressBarContainer}>
+                  <View style={styles.progressBar}>
+                    <View 
+                      style={[
+                        styles.progressFill, 
+                        { width: `${getProgressPercentage()}%` }
+                      ]} 
+                    />
+                  </View>
+                  <Text style={styles.progressText}>
+                    {sessionStatus.combinations_checked || 0} / {maxCombinations}
+                  </Text>
+                </View>
 
-            <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>{sessionStatus.combinations_checked || 0}</Text>
-                <Text style={styles.statLabel}>Combinations Checked</Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={[styles.statNumber, styles.successColor]}>
-                  {sessionStatus.found_wallets || 0}
+                <View style={styles.statsGrid}>
+                  <View style={styles.statCard}>
+                    <Text style={styles.statNumber}>{sessionStatus.combinations_checked || 0}</Text>
+                    <Text style={styles.statLabel}>Combinations Checked</Text>
+                  </View>
+                  <View style={styles.statCard}>
+                    <Text style={[styles.statNumber, styles.successColor]}>
+                      {sessionStatus.found_wallets || 0}
+                    </Text>
+                    <Text style={styles.statLabel}>Wallets Found</Text>
+                  </View>
+                </View>
+
+                <View style={styles.statusCard}>
+                  <Text style={styles.statusLabel}>Status</Text>
+                  <View style={[
+                    styles.statusBadge,
+                    sessionStatus.status === 'running' ? styles.runningBadge : styles.completedBadge
+                  ]}>
+                    <Text style={styles.statusText}>{sessionStatus.status}</Text>
+                  </View>
+                </View>
+              </>
+            ) : (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyStateText}>
+                  Recovery starting... Please wait a moment.
                 </Text>
-                <Text style={styles.statLabel}>Wallets Found</Text>
               </View>
-            </View>
-
-            <View style={styles.statusCard}>
-              <Text style={styles.statusLabel}>Status</Text>
-              <View style={[
-                styles.statusBadge,
-                sessionStatus.status === 'running' ? styles.runningBadge : styles.completedBadge
-              ]}>
-                <Text style={styles.statusText}>{sessionStatus.status}</Text>
-              </View>
-            </View>
+            )}
           </View>
         </>
       ) : (
         <View style={styles.emptyState}>
           <Text style={styles.emptyStateText}>
             No active recovery session. Start a recovery to see progress.
+            {currentSession && (
+              <Text style={styles.sessionDebugText}>
+                {"\n"}Session ID: {currentSession}
+                {"\n"}Recovering: {isRecovering ? "Yes" : "No"}
+              </Text>
+            )}
           </Text>
         </View>
       )}
