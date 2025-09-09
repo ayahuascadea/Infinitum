@@ -51,30 +51,112 @@ export default function BTCRecoveryApp() {
   const [isRecovering, setIsRecovering] = useState<boolean>(false);
   const [wordValidation, setWordValidation] = useState<{ [key: string]: boolean }>({});
   const [activeTab, setActiveTab] = useState<'setup' | 'progress' | 'results'>('setup');
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const previousResultsCount = useRef<number>(0);
 
+  // Real-time results polling (faster when actively recovering)
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (currentSession && isRecovering) {
       interval = setInterval(async () => {
         try {
+          // Get session status
           const response = await fetch(`${BACKEND_URL}/api/session/${currentSession}`);
           const status: SessionStatus = await response.json();
           setSessionStatus(status);
           
+          // Get results in real-time
+          const resultsResponse = await fetch(`${BACKEND_URL}/api/results/${currentSession}`);
+          const resultsData = await resultsResponse.json();
+          const newResults = resultsData.results || [];
+          
+          // Check if new wallets were found
+          if (newResults.length > previousResultsCount.current) {
+            console.log(`🎉 NEW WALLET FOUND! Total: ${newResults.length}`);
+            
+            // Play sound notification
+            await playWalletFoundSound();
+            
+            // Show alert for new wallet
+            const latestWallet = newResults[newResults.length - 1];
+            Alert.alert(
+              '🎉 WALLET FOUND!', 
+              `Found wallet with ${latestWallet.total_balance.toFixed(8)} BTC!\n\nMnemonic: ${latestWallet.mnemonic.substring(0, 50)}...`,
+              [
+                {
+                  text: 'View Results',
+                  onPress: () => setActiveTab('results')
+                },
+                {
+                  text: 'Continue',
+                  style: 'default'
+                }
+              ]
+            );
+            
+            previousResultsCount.current = newResults.length;
+          }
+          
+          setResults(newResults);
+          
           if (status.status === 'completed' || status.status === 'error') {
             setIsRecovering(false);
-            // Fetch results
-            const resultsResponse = await fetch(`${BACKEND_URL}/api/results/${currentSession}`);
-            const resultsData = await resultsResponse.json();
-            setResults(resultsData.results || []);
           }
         } catch (error) {
-          console.error('Error fetching session status:', error);
+          console.error('Error fetching real-time updates:', error);
         }
-      }, 2000);
+      }, 2000); // Check every 2 seconds for real-time updates
     }
     return () => clearInterval(interval);
   }, [currentSession, isRecovering]);
+
+  // Initialize sound
+  useEffect(() => {
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
+      }
+    };
+  }, [sound]);
+
+  const playWalletFoundSound = async () => {
+    try {
+      console.log('🔊 Playing wallet found sound...');
+      
+      // Create a simple beep sound using Web Audio API (works in browser)
+      if (typeof window !== 'undefined' && window.AudioContext) {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        
+        // Create a series of ascending beeps
+        const playBeep = (frequency: number, duration: number, delay: number) => {
+          setTimeout(() => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+          }, delay);
+        };
+        
+        // Play ascending celebration sounds
+        playBeep(523, 0.15, 0);    // C5
+        playBeep(659, 0.15, 100);  // E5
+        playBeep(784, 0.15, 200);  // G5
+        playBeep(1047, 0.3, 300);  // C6 (longer)
+      }
+    } catch (error) {
+      console.log('Could not play sound:', error);
+    }
+  };
 
   const handleWordChange = (position: string, word: string) => {
     const newKnownWords = { ...knownWords };
