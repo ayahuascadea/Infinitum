@@ -57,7 +57,21 @@ class RecoveryResult(BaseModel):
     balances: Dict[str, float]
     total_balance: float
 
-# REAL blockchain balance checking
+# Fast demo balance checking (for testing real-time features)
+def get_demo_balance(address: str, mnemonic: str) -> float:
+    """Fast demo balance checking to show real-time features working"""
+    # Create deterministic "balance" based on both address and mnemonic
+    combined = f"{address}{mnemonic}"
+    hash_result = hashlib.sha256(combined.encode()).hexdigest()
+    
+    # Use hash to determine balance (10% chance for better demo)
+    if int(hash_result[:2], 16) < 25:  # ~10% chance for demo
+        # Generate realistic balance amount
+        balance_seed = int(hash_result[2:8], 16) % 1000000
+        return round(balance_seed / 1000000 * 5.0, 8)  # 0.000001 to 5.0 BTC
+    return 0.0
+
+# REAL blockchain balance checking (for production use)
 def get_real_address_balance(address: str) -> float:
     """Get REAL balance from blockchain.info API with rate limiting"""
     try:
