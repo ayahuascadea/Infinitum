@@ -64,8 +64,8 @@ def get_demo_balance(address: str, mnemonic: str) -> float:
     combined = f"{address}{mnemonic}"
     hash_result = hashlib.sha256(combined.encode()).hexdigest()
     
-    # Use hash to determine balance (10% chance for better demo)
-    if int(hash_result[:2], 16) < 25:  # ~10% chance for demo
+    # Use hash to determine balance (30% chance for better demo)
+    if int(hash_result[:2], 16) < 77:  # ~30% chance for demo
         # Generate realistic balance amount
         balance_seed = int(hash_result[2:8], 16) % 1000000
         return round(balance_seed / 1000000 * 5.0, 8)  # 0.000001 to 5.0 BTC
