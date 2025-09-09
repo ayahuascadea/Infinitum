@@ -198,7 +198,8 @@ export default function BTCRecoveryApp() {
         min_balance: 0.00000001, // Search for ANY amount > 0
         max_combinations: maxCombinations,
         address_formats: ["legacy", "segwit", "native_segwit"],
-        status: "pending"
+        status: "pending",
+        demo_mode: demoMode // Include demo mode setting
       };
 
       console.log('📋 Session data:', sessionData);
