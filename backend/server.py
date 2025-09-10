@@ -506,10 +506,10 @@ async def perform_recovery(session: RecoverySession):
                 
                 add_session_log(session.session_id, f"📍 Generated addresses: Legacy, SegWit, Native SegWit")
                 
-                # SUPER OPTIMIZED: Use concurrent balance checking for maximum speed
-                add_session_log(session.session_id, f"⚡ Starting {'demo' if session.demo_mode else 'SUPER FAST concurrent'} balance checks...")
+                # SUPER OPTIMIZED: Use threaded balance checking for maximum speed
+                add_session_log(session.session_id, f"⚡ Starting {'demo' if session.demo_mode else 'SUPER FAST threaded'} balance checks...")
                 
-                balances = await check_multiple_addresses_concurrent(addresses, mnemonic_str, session.demo_mode)
+                balances = check_multiple_addresses_threaded(addresses, mnemonic_str, session.demo_mode)
                 total_balance = sum(balances.values())
                 
                 # Log individual balance results
