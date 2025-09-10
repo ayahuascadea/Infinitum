@@ -591,7 +591,7 @@ export default function BTCRecoveryApp() {
                           {formatBTC(balance)} BTC
                         </Text>
                         <Text style={styles.balanceUsd}>
-                          ≈ ${(balance * 45000).toLocaleString()} USD
+                          ≈ ${(balance * 112351).toLocaleString()} USD
                         </Text>
                       </View>
                     </View>
