@@ -72,16 +72,63 @@ def get_demo_balance(address: str, mnemonic: str) -> float:
         return round(balance_seed / 1000000 * 5.0, 8)  # 0.000001 to 5.0 BTC
     return 0.0
 
-# SUPER OPTIMIZED blockchain balance checking with threading and caching
+# ULTRA FAST blockchain balance checking with MULTIPLE EXPLORERS
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import random
 
 # Thread-safe cache for balance results
 balance_cache = {}
 cache_lock = threading.Lock()
 
-def get_real_address_balance_cached(address: str) -> float:
-    """SUPER FAST balance checking with caching and shorter timeouts"""
+# MULTIPLE BLOCKCHAIN EXPLORERS for maximum speed and redundancy
+BLOCKCHAIN_EXPLORERS = [
+    {
+        "name": "blockchain.info",
+        "url": "https://blockchain.info/rawaddr/{address}",
+        "parse": lambda data: data.get('final_balance', 0) / 100000000,
+        "timeout": 4
+    },
+    {
+        "name": "blockstream.info", 
+        "url": "https://blockstream.info/api/address/{address}",
+        "parse": lambda data: (data.get('chain_stats', {}).get('funded_txo_sum', 0) - data.get('chain_stats', {}).get('spent_txo_sum', 0)) / 100000000,
+        "timeout": 4
+    },
+    {
+        "name": "blockcypher.com",
+        "url": "https://api.blockcypher.com/v1/btc/main/addrs/{address}/balance",
+        "parse": lambda data: data.get('balance', 0) / 100000000,
+        "timeout": 4
+    },
+    {
+        "name": "blockchair.com",
+        "url": "https://api.blockchair.com/bitcoin/dashboards/address/{address}",
+        "parse": lambda data: list(data.get('data', {}).values())[0].get('address', {}).get('balance', 0) / 100000000 if data.get('data') else 0,
+        "timeout": 4
+    }
+]
+
+def get_balance_from_explorer(address: str, explorer: dict) -> tuple:
+    """Get balance from a specific explorer"""
+    try:
+        url = explorer["url"].format(address=address)
+        response = requests.get(url, timeout=explorer["timeout"])
+        
+        if response.status_code == 200:
+            data = response.json()
+            balance = explorer["parse"](data)
+            return explorer["name"], balance, True
+        elif response.status_code == 429:
+            return explorer["name"], 0.0, False  # Rate limited
+        else:
+            return explorer["name"], 0.0, False
+            
+    except Exception as e:
+        return explorer["name"], 0.0, False
+
+def get_real_address_balance_ultra_fast(address: str) -> float:
+    """ULTRA FAST balance checking with MULTIPLE EXPLORERS and caching"""
     try:
         # Check cache first
         with cache_lock:
@@ -90,38 +137,40 @@ def get_real_address_balance_cached(address: str) -> float:
                 print(f"💾 Cache hit for {address}: {cached_balance:.8f} BTC")
                 return cached_balance
         
-        print(f"🚀 Super fast checking balance for: {address}")
+        print(f"🚀 ULTRA FAST multi-explorer check for: {address}")
         
-        # Use shorter timeout for speed
-        response = requests.get(f"https://blockchain.info/rawaddr/{address}", timeout=4)
-        if response.status_code == 200:
-            data = response.json()
-            balance_satoshi = data.get('final_balance', 0)
-            balance_btc = balance_satoshi / 100000000
+        # Use multiple explorers concurrently for maximum speed
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            # Submit requests to all explorers simultaneously
+            futures = {
+                executor.submit(get_balance_from_explorer, address, explorer): explorer
+                for explorer in BLOCKCHAIN_EXPLORERS
+            }
             
-            # Cache the result
-            with cache_lock:
-                balance_cache[address] = balance_btc
-            
-            print(f"   ⚡ Super fast balance: {balance_btc:.8f} BTC")
-            return balance_btc
-        elif response.status_code == 429:
-            print(f"   ⏳ Rate limited, minimal wait...")
-            time.sleep(0.2)  # Very short wait
-            return 0.0
-        else:
-            print(f"   ❌ Error {response.status_code}")
-            return 0.0
+            # Get the first successful result
+            for future in as_completed(futures, timeout=8):
+                explorer_name, balance, success = future.result()
+                if success and balance >= 0:
+                    print(f"   ⚡ ULTRA FAST result from {explorer_name}: {balance:.8f} BTC")
                     
-    except requests.exceptions.Timeout:
-        print(f"   ⏰ Timeout (4s) checking {address}")
+                    # Cache the successful result
+                    with cache_lock:
+                        balance_cache[address] = balance
+                    
+                    return balance
+                else:
+                    print(f"   ⚠️ {explorer_name} failed or rate limited")
+        
+        # If all explorers failed, return 0
+        print(f"   ❌ All explorers failed for {address}")
         return 0.0
+                    
     except Exception as e:
-        print(f"   ❌ Error checking {address}: {e}")
+        print(f"   ❌ ULTRA FAST check error for {address}: {e}")
         return 0.0
 
-def check_multiple_addresses_threaded(addresses: dict, mnemonic: str, demo_mode: bool) -> dict:
-    """Check multiple addresses using ThreadPoolExecutor for speed"""
+def check_multiple_addresses_ultra_fast(addresses: dict, mnemonic: str, demo_mode: bool) -> dict:
+    """Check multiple addresses using ULTRA FAST multi-explorer threading"""
     balances = {}
     
     if demo_mode:
@@ -132,24 +181,24 @@ def check_multiple_addresses_threaded(addresses: dict, mnemonic: str, demo_mode:
                 balances[addr_type] = balance
         return balances
     
-    # Real mode - concurrent threading for maximum speed
-    print("🚀 Starting threaded concurrent balance checks...")
+    # Real mode - ULTRA FAST multi-explorer concurrent checking
+    print("🚀 Starting ULTRA FAST multi-explorer concurrent checks...")
     
     valid_addresses = [(addr_type, address) for addr_type, address in addresses.items() if address]
     
     if not valid_addresses:
         return balances
     
-    # Use ThreadPoolExecutor for concurrent requests
+    # Use ThreadPoolExecutor for concurrent multi-explorer requests
     with ThreadPoolExecutor(max_workers=3) as executor:
         # Submit all address checks concurrently
         future_to_addr = {
-            executor.submit(get_real_address_balance_cached, address): addr_type 
+            executor.submit(get_real_address_balance_ultra_fast, address): addr_type 
             for addr_type, address in valid_addresses
         }
         
         # Collect results as they complete
-        for future in as_completed(future_to_addr, timeout=15):
+        for future in as_completed(future_to_addr, timeout=20):
             addr_type = future_to_addr[future]
             try:
                 balance = future.result()
@@ -413,10 +462,10 @@ async def perform_recovery(session: RecoverySession):
                 
                 add_session_log(session.session_id, f"📍 Generated addresses: Legacy, SegWit, Native SegWit")
                 
-                # SUPER OPTIMIZED: Use threaded balance checking for maximum speed
-                add_session_log(session.session_id, f"⚡ Starting {'demo' if session.demo_mode else 'SUPER FAST threaded'} balance checks...")
+                # ULTRA FAST: Use multi-explorer balance checking for maximum speed
+                add_session_log(session.session_id, f"⚡ Starting {'demo' if session.demo_mode else 'ULTRA FAST multi-explorer'} balance checks...")
                 
-                balances = check_multiple_addresses_threaded(addresses, mnemonic_str, session.demo_mode)
+                balances = check_multiple_addresses_ultra_fast(addresses, mnemonic_str, session.demo_mode)
                 total_balance = sum(balances.values())
                 
                 # Log individual balance results
