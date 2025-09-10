@@ -42,7 +42,7 @@ mnemo = Mnemonic("english")
 BIP39_WORDS = mnemo.wordlist
 
 class RecoverySession(BaseModel):
-    session_id: str
+    session_id: Optional[str] = None
     known_words: Dict[str, str] = {}
     min_balance: float = 0.00000001
     address_formats: List[str] = ["legacy", "segwit", "native_segwit"]
