@@ -426,27 +426,21 @@ async def perform_recovery(session: RecoverySession):
                 
                 add_session_log(session.session_id, f"📍 Generated addresses: Legacy, SegWit, Native SegWit")
                 
-                # Choose balance checking method based on mode
-                balances = {}
-                total_balance = 0
+                # SUPER OPTIMIZED: Use concurrent balance checking for maximum speed
+                add_session_log(session.session_id, f"⚡ Starting {'demo' if session.demo_mode else 'SUPER FAST concurrent'} balance checks...")
                 
-                for addr_type, address in addresses.items():
-                    if addr_type in session.address_formats and address:
-                        add_session_log(session.session_id, f"💰 Checking {addr_type} balance: {address[:20]}...")
-                        
-                        if session.demo_mode:
-                            # Fast demo mode - quick balance checking
-                            balance = get_demo_balance(address, mnemonic_str)
-                            add_session_log(session.session_id, f"   💨 Demo balance: {balance:.8f} BTC")
-                        else:
-                            # Real blockchain mode - optimized for speed
-                            balance = get_real_address_balance(address)
-                            add_session_log(session.session_id, f"   🔗 Real balance: {balance:.8f} BTC")
-                            # OPTIMIZED: Reduced rate limiting from 2.0 to 1.0 seconds for faster queries  
-                            await asyncio.sleep(1.0)  # Reduced wait between API calls
-                        
-                        balances[addr_type] = balance
-                        total_balance += balance
+                balances = await check_multiple_addresses_concurrent(addresses, mnemonic_str, session.demo_mode)
+                total_balance = sum(balances.values())
+                
+                # Log individual balance results
+                for addr_type, balance in balances.items():
+                    if addresses.get(addr_type) and balance > 0:
+                        add_session_log(session.session_id, f"   💰 {addr_type}: {balance:.8f} BTC")
+                
+                # SUPER OPTIMIZED: No delays needed - concurrent requests handle rate limiting internally
+                if not session.demo_mode:
+                    # Very minimal delay only for non-demo mode
+                    await asyncio.sleep(0.1)  # Just 0.1 seconds instead of 1.0!
                 
                 # IMPROVED: Find ANY wallet with BTC > 0
                 if total_balance > 0:
