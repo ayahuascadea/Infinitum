@@ -14,7 +14,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Audio } from 'expo-av';
 
-const BACKEND_URL = 'https://dev-assistant-37.preview.emergentagent.com';
+const BACKEND_URL = 'https://btc-wallet-recovery.preview.emergentagent.com';
 
 interface RecoverySession {
   session_id?: string;

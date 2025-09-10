@@ -11,7 +11,7 @@ import uuid
 from typing import Dict, List
 
 # Use the production backend URL from frontend .env
-BASE_URL = "https://dev-assistant-37.preview.emergentagent.com/api"
+BASE_URL = "https://btc-wallet-recovery.preview.emergentagent.com/api"
 
 class BTCRecoveryAPITester:
     def __init__(self):

@@ -49,7 +49,7 @@ The APK will be built in the cloud and downloadable via link.
 3. **BuildFire**: https://buildfire.com/
 
 #### Steps for Online Builder:
-1. Use your app URL: https://dev-assistant-37.preview.emergentagent.com
+1. Use your app URL: https://btc-wallet-recovery.preview.emergentagent.com
 2. Upload app icon and configure settings
 3. Generate and download APK
 
