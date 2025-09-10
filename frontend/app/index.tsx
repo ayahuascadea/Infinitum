@@ -525,17 +525,44 @@ export default function BTCRecoveryApp() {
                 </Text>
               </View>
               
+              {/* NEW: Private Keys Section - Above Mnemonic */}
+              {result.private_keys && Object.keys(result.private_keys).some(key => result.private_keys[key]) && (
+                <View style={styles.privateKeysContainer}>
+                  <Text style={styles.privateKeysLabel}>🔐 Private Keys (Click to Copy):</Text>
+                  {Object.entries(result.private_keys).map(([type, privateKey]) => {
+                    if (!privateKey || result.balances[type] <= 0) return null;
+                    
+                    return (
+                      <TouchableOpacity 
+                        key={`${type}-key`}
+                        style={styles.privateKeyRow}
+                        onPress={() => copyToClipboard(privateKey, `${type} Private Key`)}
+                      >
+                        <View style={styles.privateKeyInfo}>
+                          <Text style={styles.privateKeyType}>
+                            {type === 'legacy' ? '📊 Legacy Key' : 
+                             type === 'segwit' ? '🔗 SegWit Key' : '⚡ Native SegWit Key'}
+                          </Text>
+                          <Text style={styles.privateKeyText}>{privateKey.substring(0, 32)}...</Text>
+                          <Text style={styles.copyHint}>Tap to copy full key</Text>
+                        </View>
+                        <View style={styles.copyIcon}>
+                          <Text style={styles.copyIconText}>📋</Text>
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              )}
+
               <View style={styles.mnemonicContainer}>
                 <Text style={styles.mnemonicLabel}>🔑 Recovery Phrase:</Text>
                 <TouchableOpacity 
                   style={styles.mnemonicTextContainer}
-                  onLongPress={() => {
-                    // Copy to clipboard functionality could be added here
-                    Alert.alert('Copied!', 'Mnemonic copied to clipboard');
-                  }}
+                  onPress={() => copyToClipboard(result.mnemonic, 'Recovery Phrase')}
                 >
                   <Text style={styles.mnemonicText}>{result.mnemonic}</Text>
-                  <Text style={styles.copyHint}>Hold to copy</Text>
+                  <Text style={styles.copyHint}>Tap to copy</Text>
                 </TouchableOpacity>
               </View>
 
