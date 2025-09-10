@@ -355,7 +355,7 @@ export default function BTCRecoveryApp() {
               onPress={() => setDemoMode(false)}
             >
               <Text style={[styles.modeToggleText, !demoMode && styles.activeModeToggleText]}>
-                🔗 Real Blockchain
+                🚀 ULTRA FAST Blockchain
               </Text>
             </TouchableOpacity>
           </View>
