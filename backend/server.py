@@ -72,106 +72,13 @@ def get_demo_balance(address: str, mnemonic: str) -> float:
         return round(balance_seed / 1000000 * 5.0, 8)  # 0.000001 to 5.0 BTC
     return 0.0
 
-# SUPER OPTIMIZED blockchain balance checking with concurrent requests
-import asyncio
-import aiohttp
-from concurrent.futures import ThreadPoolExecutor, as_completed
+# SUPER OPTIMIZED blockchain balance checking with threading and caching
 import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Thread-safe cache for balance results
 balance_cache = {}
 cache_lock = threading.Lock()
-
-async def get_real_address_balance_fast(address: str) -> float:
-    """SUPER FAST balance checking with async HTTP and caching"""
-    try:
-        # Check cache first
-        with cache_lock:
-            if address in balance_cache:
-                cached_balance = balance_cache[address]
-                print(f"💾 Cache hit for {address}: {cached_balance:.8f} BTC")
-                return cached_balance
-        
-        print(f"🚀 Fast checking balance for: {address}")
-        
-        # Use async HTTP for faster requests
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as session:
-            async with session.get(f"https://blockchain.info/rawaddr/{address}") as response:
-                if response.status == 200:
-                    data = await response.json()
-                    balance_satoshi = data.get('final_balance', 0)
-                    balance_btc = balance_satoshi / 100000000
-                    
-                    # Cache the result
-                    with cache_lock:
-                        balance_cache[address] = balance_btc
-                    
-                    print(f"   ⚡ Fast balance: {balance_btc:.8f} BTC")
-                    return balance_btc
-                elif response.status == 429:
-                    print(f"   ⏳ Rate limited, brief pause...")
-                    await asyncio.sleep(0.3)  # Very short wait
-                    return 0.0
-                else:
-                    print(f"   ❌ Error {response.status}")
-                    return 0.0
-                    
-    except asyncio.TimeoutError:
-        print(f"   ⏰ Timeout (5s) checking {address}")
-        return 0.0
-    except Exception as e:
-        print(f"   ❌ Error checking {address}: {e}")
-        return 0.0
-
-def get_real_address_balance(address: str) -> float:
-    """Sync wrapper for async balance checking"""
-    try:
-        # Run async function in current event loop
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(get_real_address_balance_fast(address))
-    except RuntimeError:
-        # If no event loop, create one
-        return asyncio.run(get_real_address_balance_fast(address))
-
-async def check_multiple_addresses_concurrent(addresses: dict, mnemonic: str, demo_mode: bool) -> dict:
-    """Check multiple addresses concurrently for maximum speed"""
-    balances = {}
-    
-    if demo_mode:
-        # Demo mode - sequential but fast
-        for addr_type, address in addresses.items():
-            if address:
-                balance = get_demo_balance(address, mnemonic)
-                balances[addr_type] = balance
-        return balances
-    
-    # Real mode - concurrent requests for maximum speed
-    print("🚀 Starting concurrent balance checks...")
-    
-    async def check_single_address(addr_type: str, address: str):
-        if address:
-            balance = await get_real_address_balance_fast(address)
-            return addr_type, balance
-        return addr_type, 0.0
-    
-    # Create concurrent tasks for all addresses
-    tasks = []
-    for addr_type, address in addresses.items():
-        if address:
-            task = check_single_address(addr_type, address)
-            tasks.append(task)
-    
-    # Execute all requests concurrently
-    if tasks:
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-        for result in results:
-            if isinstance(result, tuple):
-                addr_type, balance = result
-                balances[addr_type] = balance
-            else:
-                print(f"   ⚠️ Error in concurrent check: {result}")
-    
-    return balances
 
 def get_real_address_balance_cached(address: str) -> float:
     """SUPER FAST balance checking with caching and shorter timeouts"""
