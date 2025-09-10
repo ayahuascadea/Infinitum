@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Comprehensive Backend Test Suite for BTC Recovery API
-Tests the improved API that finds ALL wallets with BTC > 0
+Focus on: Slower Demo Mode, Real-time Logs, Bitcoin Cryptography, Blockchain Integration
 """
 
 import requests
