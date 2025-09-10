@@ -157,10 +157,10 @@ def derive_bip44_address_key(seed: bytes, coin_type: int = 0, account: int = 0, 
     
     return key
 
-def mnemonic_to_addresses(mnemonic: str) -> Dict[str, str]:
-    """Generate REAL Bitcoin addresses directly from mnemonic - FIXED CORRELATION"""
+def mnemonic_to_addresses(mnemonic: str) -> tuple:
+    """Generate REAL Bitcoin addresses AND private keys directly from mnemonic - FIXED CORRELATION"""
     try:
-        print(f"🔐 Generating addresses from mnemonic: {mnemonic}")
+        print(f"🔐 Generating addresses and private keys from mnemonic: {mnemonic}")
         
         # Convert mnemonic to seed
         seed = mnemonic_to_seed(mnemonic)
@@ -173,6 +173,10 @@ def mnemonic_to_addresses(mnemonic: str) -> Dict[str, str]:
         public_key = sk.pubkey.serialize(compressed=True)
         
         addresses = {}
+        private_keys = {}
+        
+        # Store the private key in hex format for all address types (same key, different formats)
+        private_key_hex = private_key.hex()
         
         # REAL Legacy address (P2PKH) - 1xxxxx
         try:
@@ -189,10 +193,13 @@ def mnemonic_to_addresses(mnemonic: str) -> Dict[str, str]:
             # Base58 encode - REAL Bitcoin address
             legacy_addr = base58.b58encode(versioned_payload + checksum).decode()
             addresses['legacy'] = legacy_addr
+            private_keys['legacy'] = private_key_hex
             print(f"   📍 Legacy: {legacy_addr}")
+            print(f"   🔑 Private Key: {private_key_hex[:20]}...")
         except Exception as e:
             print(f"Error generating legacy address: {e}")
             addresses['legacy'] = None
+            private_keys['legacy'] = None
         
         # REAL SegWit address (P2SH-P2WPKH) - 3xxxxx
         try:
@@ -212,26 +219,32 @@ def mnemonic_to_addresses(mnemonic: str) -> Dict[str, str]:
             # Base58 encode - REAL Bitcoin SegWit address
             segwit_addr = base58.b58encode(versioned_payload + checksum).decode()
             addresses['segwit'] = segwit_addr
+            private_keys['segwit'] = private_key_hex
             print(f"   📍 SegWit: {segwit_addr}")
         except Exception as e:
             print(f"Error generating segwit address: {e}")
             addresses['segwit'] = None
+            private_keys['segwit'] = None
         
         # REAL Native SegWit (Bech32) - bc1qxxxxx (simplified but valid format)
         try:
             pubkey_hash = hashlib.new('ripemd160', hashlib.sha256(public_key).digest()).digest()
             native_addr = f"bc1q{pubkey_hash.hex()}"
             addresses['native_segwit'] = native_addr
+            private_keys['native_segwit'] = private_key_hex
             print(f"   📍 Native SegWit: {native_addr}")
         except Exception as e:
             print(f"Error generating native segwit address: {e}")
             addresses['native_segwit'] = None
+            private_keys['native_segwit'] = None
         
-        return addresses
+        return addresses, private_keys
         
     except Exception as e:
         print(f"❌ Error generating addresses from mnemonic: {e}")
-        return {"legacy": None, "segwit": None, "native_segwit": None}
+        return ({"legacy": None, "segwit": None, "native_segwit": None}, 
+                {"legacy": None, "segwit": None, "native_segwit": None})
+
 
 def check_mnemonic_validity(words: List[str]) -> bool:
     """Check if word combination is REAL valid BIP39 mnemonic"""
