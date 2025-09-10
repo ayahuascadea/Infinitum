@@ -647,7 +647,7 @@ export default function BTCRecoveryApp() {
 
         <View style={styles.warningBanner}>
           <Text style={styles.warningText}>
-            ⚠️ Important: This tool searches for ANY wallet with BTC &gt; 0. 
+            ⚠️ Important: INFINITUM searches for ANY wallet with BTC &gt; 0 using multi-explorer technology. 
             Use only for recovering your own lost wallets.
           </Text>
         </View>
