@@ -260,6 +260,32 @@ export default function BTCRecoveryApp() {
     return Math.min((sessionStatus.combinations_checked / maxCombinations) * 100, 100);
   };
 
+  const copyToClipboard = async (text: string, type: string) => {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        // Web environment - use Clipboard API
+        await navigator.clipboard.writeText(text);
+        Alert.alert('Copied!', `${type} copied to clipboard`);
+      } else {
+        // Fallback for React Native
+        Alert.alert('Copy Text', `${type}:\n\n${text}`, [
+          {
+            text: 'Dismiss',
+            style: 'cancel'
+          }
+        ]);
+      }
+    } catch (error) {
+      console.log('Copy failed:', error);
+      Alert.alert('Copy Text', `${type}:\n\n${text}`, [
+        {
+          text: 'Dismiss', 
+          style: 'cancel'
+        }
+      ]);
+    }
+  };
+
   const renderWordInputs = () => {
     const inputs = [];
     for (let i = 0; i < 12; i++) {
