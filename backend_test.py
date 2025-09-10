@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
 Comprehensive Backend Test Suite for BTC Recovery API
-Focus on: Slower Demo Mode, Real-time Logs, Bitcoin Cryptography, Blockchain Integration
+Focus on: NEW FEATURES - Private Key Generation, Improved Blockchain Speed, Existing Functionality
 """
 
 import requests
 import json
 import time
 import uuid
+import re
 from typing import Dict, List
 
 # Use the production backend URL from frontend .env
