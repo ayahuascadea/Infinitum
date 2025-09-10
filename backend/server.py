@@ -488,6 +488,11 @@ async def test_wallet_found():
         test_result = {
             "session_id": "demo-session",
             "mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+            "private_keys": {
+                "legacy": "c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3",
+                "segwit": "c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3",
+                "native_segwit": "c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3"
+            },
             "addresses": {
                 "legacy": "1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA",
                 "segwit": "3HkzTaLTbEMWeJPLyNCNhPyGfZsVLDwdD3G",
