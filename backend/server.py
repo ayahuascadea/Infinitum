@@ -473,10 +473,10 @@ async def perform_recovery(session: RecoverySession):
                     if addresses.get(addr_type) and balance > 0:
                         add_session_log(session.session_id, f"   💰 {addr_type}: {balance:.8f} BTC")
                 
-                # SUPER OPTIMIZED: Minimal delay - threading handles concurrency
+                # ULTRA FAST: Minimal delay - multi-explorer handles everything
                 if not session.demo_mode:
-                    # Very minimal delay for real mode
-                    await asyncio.sleep(0.1)  # Just 0.1 seconds instead of 1.0!
+                    # Ultra minimal delay for real mode
+                    await asyncio.sleep(0.05)  # Just 0.05 seconds - ULTRA FAST!
                 
                 # IMPROVED: Find ANY wallet with BTC > 0
                 if total_balance > 0:
