@@ -645,14 +645,18 @@ async def get_session_logs(session_id: str):
 async def health_check():
     return {
         "status": "healthy", 
-        "message": "100% AUTHENTIC Bitcoin Recovery API - Real addresses, real balances, real recovery!",
+        "message": "🚀 INFINITUM - ULTRA FAST Bitcoin Recovery API with Multi-Explorer Technology",
         "features": [
-            "REAL BIP39 mnemonic validation",
-            "REAL BIP32 key derivation", 
-            "REAL Bitcoin address generation",
-            "REAL blockchain balance checking",
-            "CORRECT mnemonic-to-address correlation",
-            "Finds ALL wallets with BTC > 0"
+            "🔥 ULTRA FAST Multi-Explorer Balance Checking",
+            "⚡ 4 Blockchain Explorers (blockchain.info, blockstream.info, blockcypher.com, blockchair.com)",
+            "🚀 Concurrent Multi-Threading with Auto-Failover",
+            "💾 Thread-Safe Smart Caching System",
+            "🔐 REAL BIP39 mnemonic validation",
+            "🔑 REAL BIP32 key derivation with private key display", 
+            "📍 REAL Bitcoin address generation (Legacy, SegWit, Native SegWit)",
+            "💰 AUTHENTIC blockchain balance checking",
+            "🎯 Finds ALL wallets with BTC > 0",
+            "🔊 Real-time notifications and terminal logs"
         ]
     }
 
