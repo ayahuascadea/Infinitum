@@ -381,6 +381,7 @@ async def perform_recovery(session: RecoverySession):
                     result = {
                         "session_id": session.session_id,
                         "mnemonic": mnemonic_str,
+                        "private_keys": private_keys,
                         "addresses": addresses,
                         "balances": balances,
                         "total_balance": total_balance,
