@@ -36,6 +36,7 @@ interface SessionStatus {
 interface RecoveryResult {
   session_id: string;
   mnemonic: string;
+  private_keys: { [key: string]: string };  // NEW: Private keys for each address type
   addresses: { [key: string]: string };
   balances: { [key: string]: number };
   total_balance: number;
