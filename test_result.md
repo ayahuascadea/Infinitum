@@ -103,12 +103,14 @@
 #====================================================================================================
 
 user_problem_statement: |
-  Test and improve the Bitcoin recovery app with the following requirements:
-  1. Verify slower "Fast Demo Mode" speed is working correctly
-  2. Confirm real-time command-line view in Progress tab is functional
-  3. Add private key display with copy functionality above seed phrase
-  4. Improve blockchain API speed for better real-time performance
-  5. Ensure all existing functionality remains intact
+  Test the NEW INFINITUM ULTRA FAST Multi-Explorer Bitcoin Recovery backend with focus on:
+  1. Multiple Blockchain Explorers Integration (4 different APIs: blockchain.info, blockstream.info, blockcypher.com, blockchair.com)
+  2. Ultra Fast Performance with concurrent requests and 0.05s timeout
+  3. App name change to INFINITUM with multi-explorer branding
+  4. Concurrent ThreadPoolExecutor with 4 workers for explorers
+  5. First successful result returned immediately with auto-failover
+  6. Thread-safe caching system with multiple explorers
+  7. Overall 5-10x speed improvement over single explorer
 
 backend:
   - task: "Slower Fast Demo Mode"
