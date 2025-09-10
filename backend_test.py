@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Test Suite for BTC Recovery API
-Focus on: NEW FEATURES - Private Key Generation, Improved Blockchain Speed, Existing Functionality
+INFINITUM ULTRA FAST Multi-Explorer Bitcoin Recovery API Test Suite
+Focus on: NEW INFINITUM ULTRA FAST Multi-Explorer Technology Testing
 """
 
 import requests
@@ -10,6 +10,7 @@ import time
 import uuid
 import re
 from typing import Dict, List
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Use the production backend URL from frontend .env
 BASE_URL = "https://btc-wallet-recovery.preview.emergentagent.com/api"
