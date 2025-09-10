@@ -362,7 +362,7 @@ export default function BTCRecoveryApp() {
           <Text style={styles.modeDescription}>
             {demoMode 
               ? "💨 Fast mode - Quick results to see real-time features!" 
-              : "🔍 Real mode - Queries actual Bitcoin blockchain (slower)"}
+              : "🚀 ULTRA FAST mode - Multi-explorer blockchain queries for maximum speed!"}
           </Text>
         </View>
       </View>
