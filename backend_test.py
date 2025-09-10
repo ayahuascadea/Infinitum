@@ -398,61 +398,71 @@ class BTCRecoveryAPITester:
             return False
     
     def run_all_tests(self):
-        """Run all tests in sequence"""
+        """Run all tests focusing on review request requirements"""
         print("🚀 Starting BTC Recovery API Test Suite")
-        print("=" * 60)
+        print("🎯 Focus: Slower Demo Mode, Real-time Logs, Bitcoin Cryptography, Blockchain Integration")
+        print("=" * 80)
         
         results = {}
         
-        # Test 1: Health Check
+        # Test 1: Health Check with Features Verification
         results["health_check"] = self.test_health_check()
         
-        # Test 2: Word Validation
-        results["word_validation"] = self.test_word_validation()
+        # Test 2: BIP39 Word Validation (Real wordlist)
+        results["bip39_word_validation"] = self.test_bip39_word_validation()
         
-        # Test 3: Wordlist
-        results["wordlist"] = self.test_wordlist_endpoint()
+        # Test 3: Slower Fast Demo Mode (KEY REQUIREMENT)
+        results["slower_demo_mode"] = self.test_slower_demo_mode()
         
-        # Test 4: Start Recovery
-        session_id = self.test_start_recovery()
-        results["start_recovery"] = session_id is not None
+        # Test 4: Real-time Logs API (KEY REQUIREMENT)
+        results["real_time_logs_api"] = self.test_real_time_logs_api()
         
-        if session_id:
-            # Test 5: Session Status
-            status_success, session_data = self.test_session_status(session_id)
-            results["session_status"] = status_success
-            
-            # Test 6: Results Retrieval
-            results_success, results_data = self.test_results_retrieval(session_id)
-            results["results_retrieval"] = results_success
-        else:
-            results["session_status"] = False
-            results["results_retrieval"] = False
+        # Test 5: Bitcoin Cryptography (KEY REQUIREMENT)
+        results["bitcoin_cryptography"] = self.test_bitcoin_cryptography()
         
-        # Test 7: Improvement Verification
-        results["improvement_verification"] = self.test_improvement_verification()
+        # Test 6: Blockchain Integration (KEY REQUIREMENT)
+        results["blockchain_integration"] = self.test_blockchain_integration()
         
         # Summary
-        print("\n" + "=" * 60)
+        print("\n" + "=" * 80)
         print("🎯 TEST RESULTS SUMMARY")
-        print("=" * 60)
+        print("=" * 80)
         
         passed = 0
         total = len(results)
+        critical_tests = ["slower_demo_mode", "real_time_logs_api", "bitcoin_cryptography", "blockchain_integration"]
+        critical_passed = 0
         
         for test_name, success in results.items():
             status = "✅ PASSED" if success else "❌ FAILED"
-            print(f"{test_name.replace('_', ' ').title()}: {status}")
+            priority = "🔥 CRITICAL" if test_name in critical_tests else "📋 STANDARD"
+            print(f"{test_name.replace('_', ' ').title()}: {status} {priority}")
             if success:
                 passed += 1
+                if test_name in critical_tests:
+                    critical_passed += 1
         
         print(f"\nOverall: {passed}/{total} tests passed")
+        print(f"Critical: {critical_passed}/{len(critical_tests)} critical tests passed")
         
-        if passed == total:
-            print("🎉 ALL TESTS PASSED! BTC Recovery API is working correctly.")
-            print("✅ IMPROVEMENT CONFIRMED: API now finds ALL wallets with BTC > 0")
+        # Specific feedback based on review requirements
+        if critical_passed == len(critical_tests):
+            print("\n🎉 ALL CRITICAL TESTS PASSED!")
+            print("✅ Slower Demo Mode: Working with appropriate delays")
+            print("✅ Real-time Logs API: Functional for terminal display")
+            print("✅ Bitcoin Cryptography: Real BIP39/BIP32/secp256k1 working")
+            print("✅ Blockchain Integration: blockchain.info API integration working")
         else:
-            print(f"⚠️ {total - passed} tests failed. Please check the issues above.")
+            print(f"\n⚠️ {len(critical_tests) - critical_passed} critical tests failed!")
+            
+            if not results.get("slower_demo_mode"):
+                print("❌ CRITICAL: Slower demo mode not working properly")
+            if not results.get("real_time_logs_api"):
+                print("❌ CRITICAL: Real-time logs API not functional")
+            if not results.get("bitcoin_cryptography"):
+                print("❌ CRITICAL: Bitcoin cryptography issues detected")
+            if not results.get("blockchain_integration"):
+                print("❌ CRITICAL: Blockchain API integration problems")
         
         return results
 
