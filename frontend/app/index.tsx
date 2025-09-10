@@ -641,8 +641,8 @@ export default function BTCRecoveryApp() {
         style={styles.gradient}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>BTC Wallet Recovery</Text>
-          <Text style={styles.subtitle}>Find ALL Wallets with Bitcoin</Text>
+          <Text style={styles.title}>🚀 INFINITUM</Text>
+          <Text style={styles.subtitle}>Ultra Fast Bitcoin Recovery</Text>
         </View>
 
         <View style={styles.warningBanner}>
