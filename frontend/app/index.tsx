@@ -1204,4 +1204,57 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'monospace',
   },
+  privateKeysContainer: {
+    backgroundColor: 'rgba(255, 165, 0, 0.1)',  // Orange tint for private keys
+    borderColor: '#ffa500',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+  },
+  privateKeysLabel: {
+    color: '#ffa500',
+    fontSize: 12,
+    marginBottom: 8,
+    fontWeight: 'bold',
+  },
+  privateKeyRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 165, 0, 0.2)',
+    marginBottom: 4,
+  },
+  privateKeyInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  privateKeyType: {
+    color: '#ffa500',
+    fontSize: 10,
+    textTransform: 'uppercase',
+    marginBottom: 2,
+    fontWeight: 'bold',
+  },
+  privateKeyText: {
+    color: '#fff',
+    fontSize: 12,
+    fontFamily: 'monospace',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    padding: 6,
+    borderRadius: 4,
+  },
+  copyIcon: {
+    backgroundColor: 'rgba(255, 165, 0, 0.2)',
+    borderRadius: 16,
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  copyIconText: {
+    fontSize: 14,
+  },
 });
