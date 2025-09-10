@@ -580,12 +580,10 @@ export default function BTCRecoveryApp() {
                            type === 'segwit' ? '🔗 SegWit' : '⚡ Native SegWit'}
                         </Text>
                         <TouchableOpacity 
-                          onLongPress={() => {
-                            Alert.alert('Copied!', `Address ${address} copied to clipboard`);
-                          }}
+                          onPress={() => copyToClipboard(address, `${type} Address`)}
                         >
                           <Text style={styles.address}>{address}</Text>
-                          <Text style={styles.copyHint}>Hold to copy</Text>
+                          <Text style={styles.copyHint}>Tap to copy</Text>
                         </TouchableOpacity>
                       </View>
                       <View style={styles.balanceContainer}>
