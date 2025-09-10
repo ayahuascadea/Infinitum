@@ -75,7 +75,7 @@ def get_demo_balance(address: str, mnemonic: str) -> float:
 # SUPER OPTIMIZED blockchain balance checking with concurrent requests
 import asyncio
 import aiohttp
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
 
 # Thread-safe cache for balance results
