@@ -173,6 +173,86 @@ async def check_multiple_addresses_concurrent(addresses: dict, mnemonic: str, de
     
     return balances
 
+def get_real_address_balance_cached(address: str) -> float:
+    """SUPER FAST balance checking with caching and shorter timeouts"""
+    try:
+        # Check cache first
+        with cache_lock:
+            if address in balance_cache:
+                cached_balance = balance_cache[address]
+                print(f"💾 Cache hit for {address}: {cached_balance:.8f} BTC")
+                return cached_balance
+        
+        print(f"🚀 Super fast checking balance for: {address}")
+        
+        # Use shorter timeout for speed
+        response = requests.get(f"https://blockchain.info/rawaddr/{address}", timeout=4)
+        if response.status_code == 200:
+            data = response.json()
+            balance_satoshi = data.get('final_balance', 0)
+            balance_btc = balance_satoshi / 100000000
+            
+            # Cache the result
+            with cache_lock:
+                balance_cache[address] = balance_btc
+            
+            print(f"   ⚡ Super fast balance: {balance_btc:.8f} BTC")
+            return balance_btc
+        elif response.status_code == 429:
+            print(f"   ⏳ Rate limited, minimal wait...")
+            time.sleep(0.2)  # Very short wait
+            return 0.0
+        else:
+            print(f"   ❌ Error {response.status_code}")
+            return 0.0
+                    
+    except requests.exceptions.Timeout:
+        print(f"   ⏰ Timeout (4s) checking {address}")
+        return 0.0
+    except Exception as e:
+        print(f"   ❌ Error checking {address}: {e}")
+        return 0.0
+
+def check_multiple_addresses_threaded(addresses: dict, mnemonic: str, demo_mode: bool) -> dict:
+    """Check multiple addresses using ThreadPoolExecutor for speed"""
+    balances = {}
+    
+    if demo_mode:
+        # Demo mode - sequential but fast
+        for addr_type, address in addresses.items():
+            if address:
+                balance = get_demo_balance(address, mnemonic)
+                balances[addr_type] = balance
+        return balances
+    
+    # Real mode - concurrent threading for maximum speed
+    print("🚀 Starting threaded concurrent balance checks...")
+    
+    valid_addresses = [(addr_type, address) for addr_type, address in addresses.items() if address]
+    
+    if not valid_addresses:
+        return balances
+    
+    # Use ThreadPoolExecutor for concurrent requests
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        # Submit all address checks concurrently
+        future_to_addr = {
+            executor.submit(get_real_address_balance_cached, address): addr_type 
+            for addr_type, address in valid_addresses
+        }
+        
+        # Collect results as they complete
+        for future in as_completed(future_to_addr, timeout=15):
+            addr_type = future_to_addr[future]
+            try:
+                balance = future.result()
+                balances[addr_type] = balance
+            except Exception as e:
+                print(f"   ⚠️ Error checking {addr_type}: {e}")
+                balances[addr_type] = 0.0
+    
+    return balances
+
 # REAL Bitcoin cryptography functions
 def mnemonic_to_seed(mnemonic: str, passphrase: str = "") -> bytes:
     """Convert mnemonic to seed using PBKDF2 (BIP39 standard)"""
