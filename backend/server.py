@@ -72,12 +72,12 @@ def get_demo_balance(address: str, mnemonic: str) -> float:
         return round(balance_seed / 1000000 * 5.0, 8)  # 0.000001 to 5.0 BTC
     return 0.0
 
-# REAL blockchain balance checking (for production use)
+# REAL blockchain balance checking (for production use) - OPTIMIZED for speed
 def get_real_address_balance(address: str) -> float:
-    """Get REAL balance from blockchain.info API with rate limiting"""
+    """Get REAL balance from blockchain.info API with OPTIMIZED rate limiting"""
     try:
         print(f"🔍 Checking REAL balance for: {address}")
-        response = requests.get(f"https://blockchain.info/rawaddr/{address}", timeout=10)
+        response = requests.get(f"https://blockchain.info/rawaddr/{address}", timeout=8)
         if response.status_code == 200:
             data = response.json()
             balance_satoshi = data.get('final_balance', 0)
@@ -85,8 +85,8 @@ def get_real_address_balance(address: str) -> float:
             print(f"   💰 Balance: {balance_btc:.8f} BTC")
             return balance_btc
         elif response.status_code == 429:
-            print(f"   ⏳ Rate limited, waiting...")
-            time.sleep(2)
+            print(f"   ⏳ Rate limited, waiting briefly...")
+            time.sleep(1)  # Reduced from 2 seconds to 1 second
             return 0.0
         else:
             print(f"   ❌ Error {response.status_code}")
