@@ -653,9 +653,9 @@ class BTCRecoveryAPITester:
             return False
     
     def run_all_tests(self):
-        """Run all tests focusing on review request requirements"""
-        print("🚀 Starting BTC Recovery API Test Suite")
-        print("🎯 Focus: Slower Demo Mode, Real-time Logs, Bitcoin Cryptography, Blockchain Integration")
+        """Run all tests focusing on NEW FEATURES and existing functionality"""
+        print("🚀 Starting BTC Recovery API Test Suite - NEW FEATURES FOCUS")
+        print("🎯 Focus: Private Key Generation, Improved Blockchain Speed, Existing Functionality")
         print("=" * 80)
         
         results = {}
@@ -666,58 +666,117 @@ class BTCRecoveryAPITester:
         # Test 2: BIP39 Word Validation (Real wordlist)
         results["bip39_word_validation"] = self.test_bip39_word_validation()
         
-        # Test 3: Slower Fast Demo Mode (KEY REQUIREMENT)
+        # Test 3: Slower Fast Demo Mode (EXISTING FUNCTIONALITY)
         results["slower_demo_mode"] = self.test_slower_demo_mode()
         
-        # Test 4: Real-time Logs API (KEY REQUIREMENT)
+        # Test 4: Real-time Logs API (EXISTING FUNCTIONALITY)
         results["real_time_logs_api"] = self.test_real_time_logs_api()
         
-        # Test 5: Bitcoin Cryptography (KEY REQUIREMENT)
+        # Test 5: Bitcoin Cryptography (EXISTING FUNCTIONALITY)
         results["bitcoin_cryptography"] = self.test_bitcoin_cryptography()
         
-        # Test 6: Blockchain Integration (KEY REQUIREMENT)
+        # Test 6: Blockchain Integration (EXISTING FUNCTIONALITY)
         results["blockchain_integration"] = self.test_blockchain_integration()
+        
+        # Test 7: NEW FEATURE - Private Key Generation and Display
+        results["private_key_generation"] = self.test_private_key_generation()
+        
+        # Test 8: NEW FEATURE - Improved Blockchain Speed
+        results["improved_blockchain_speed"] = self.test_improved_blockchain_speed()
+        
+        # Test 9: Test Endpoint with Private Keys
+        results["test_wallet_found_endpoint"] = self.test_wallet_found_endpoint()
         
         # Summary
         print("\n" + "=" * 80)
-        print("🎯 TEST RESULTS SUMMARY")
+        print("🎯 TEST RESULTS SUMMARY - NEW FEATURES FOCUS")
         print("=" * 80)
         
         passed = 0
         total = len(results)
-        critical_tests = ["slower_demo_mode", "real_time_logs_api", "bitcoin_cryptography", "blockchain_integration"]
-        critical_passed = 0
         
-        for test_name, success in results.items():
+        # Categorize tests
+        new_features = ["private_key_generation", "improved_blockchain_speed", "test_wallet_found_endpoint"]
+        existing_features = ["slower_demo_mode", "real_time_logs_api", "bitcoin_cryptography", "blockchain_integration"]
+        basic_tests = ["health_check", "bip39_word_validation"]
+        
+        new_passed = 0
+        existing_passed = 0
+        basic_passed = 0
+        
+        print("\n🆕 NEW FEATURES:")
+        for test_name in new_features:
+            success = results.get(test_name, False)
             status = "✅ PASSED" if success else "❌ FAILED"
-            priority = "🔥 CRITICAL" if test_name in critical_tests else "📋 STANDARD"
-            print(f"{test_name.replace('_', ' ').title()}: {status} {priority}")
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
             if success:
                 passed += 1
-                if test_name in critical_tests:
-                    critical_passed += 1
+                new_passed += 1
+        
+        print("\n🔄 EXISTING FUNCTIONALITY:")
+        for test_name in existing_features:
+            success = results.get(test_name, False)
+            status = "✅ PASSED" if success else "❌ FAILED"
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
+            if success:
+                passed += 1
+                existing_passed += 1
+        
+        print("\n📋 BASIC TESTS:")
+        for test_name in basic_tests:
+            success = results.get(test_name, False)
+            status = "✅ PASSED" if success else "❌ FAILED"
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
+            if success:
+                passed += 1
+                basic_passed += 1
         
         print(f"\nOverall: {passed}/{total} tests passed")
-        print(f"Critical: {critical_passed}/{len(critical_tests)} critical tests passed")
+        print(f"New Features: {new_passed}/{len(new_features)} passed")
+        print(f"Existing Features: {existing_passed}/{len(existing_features)} passed")
+        print(f"Basic Tests: {basic_passed}/{len(basic_tests)} passed")
         
         # Specific feedback based on review requirements
-        if critical_passed == len(critical_tests):
-            print("\n🎉 ALL CRITICAL TESTS PASSED!")
-            print("✅ Slower Demo Mode: Working with appropriate delays")
-            print("✅ Real-time Logs API: Functional for terminal display")
-            print("✅ Bitcoin Cryptography: Real BIP39/BIP32/secp256k1 working")
-            print("✅ Blockchain Integration: blockchain.info API integration working")
+        print("\n" + "=" * 80)
+        print("🎯 NEW FEATURES ASSESSMENT")
+        print("=" * 80)
+        
+        if new_passed == len(new_features):
+            print("🎉 ALL NEW FEATURES WORKING!")
+            print("✅ Private Key Generation: Working with proper Bitcoin cryptography")
+            print("✅ Improved Blockchain Speed: Faster API calls (1s delays vs 2s)")
+            print("✅ Test Endpoint: Private keys included in results")
         else:
-            print(f"\n⚠️ {len(critical_tests) - critical_passed} critical tests failed!")
+            print(f"⚠️ {len(new_features) - new_passed} new features have issues!")
+            
+            if not results.get("private_key_generation"):
+                print("❌ CRITICAL: Private key generation not working properly")
+            if not results.get("improved_blockchain_speed"):
+                print("❌ CRITICAL: Blockchain speed improvements not detected")
+            if not results.get("test_wallet_found_endpoint"):
+                print("❌ CRITICAL: Test endpoint missing private keys")
+        
+        print("\n" + "=" * 80)
+        print("🔄 EXISTING FUNCTIONALITY ASSESSMENT")
+        print("=" * 80)
+        
+        if existing_passed == len(existing_features):
+            print("✅ ALL EXISTING FUNCTIONALITY INTACT!")
+            print("✅ Slower Demo Mode: Still working correctly")
+            print("✅ Real-time Logs: Functional for terminal display")
+            print("✅ Bitcoin Cryptography: Real BIP39/BIP32/secp256k1 working")
+            print("✅ Blockchain Integration: blockchain.info API working")
+        else:
+            print(f"⚠️ {len(existing_features) - existing_passed} existing features have regressions!")
             
             if not results.get("slower_demo_mode"):
-                print("❌ CRITICAL: Slower demo mode not working properly")
+                print("❌ REGRESSION: Slower demo mode not working")
             if not results.get("real_time_logs_api"):
-                print("❌ CRITICAL: Real-time logs API not functional")
+                print("❌ REGRESSION: Real-time logs API broken")
             if not results.get("bitcoin_cryptography"):
-                print("❌ CRITICAL: Bitcoin cryptography issues detected")
+                print("❌ REGRESSION: Bitcoin cryptography issues")
             if not results.get("blockchain_integration"):
-                print("❌ CRITICAL: Blockchain API integration problems")
+                print("❌ REGRESSION: Blockchain API integration problems")
         
         return results
 
