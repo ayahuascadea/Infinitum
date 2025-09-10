@@ -343,7 +343,7 @@ async def perform_recovery(session: RecoverySession):
             try:
                 # FIXED: Generate addresses directly from THIS mnemonic
                 add_session_log(session.session_id, f"🔐 Generating Bitcoin addresses from mnemonic...")
-                addresses = mnemonic_to_addresses(mnemonic_str)
+                addresses, private_keys = mnemonic_to_addresses(mnemonic_str)
                 
                 if not any(addresses.values()):
                     add_session_log(session.session_id, f"❌ Failed to generate addresses, skipping...")
