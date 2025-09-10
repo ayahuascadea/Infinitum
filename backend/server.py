@@ -364,11 +364,11 @@ async def perform_recovery(session: RecoverySession):
                             balance = get_demo_balance(address, mnemonic_str)
                             add_session_log(session.session_id, f"   💨 Demo balance: {balance:.8f} BTC")
                         else:
-                            # Real blockchain mode - authentic but slower
+                            # Real blockchain mode - optimized for speed
                             balance = get_real_address_balance(address)
                             add_session_log(session.session_id, f"   🔗 Real balance: {balance:.8f} BTC")
-                            # Rate limiting to avoid being blocked  
-                            await asyncio.sleep(2.0)  # Wait between API calls
+                            # OPTIMIZED: Reduced rate limiting from 2.0 to 1.0 seconds for faster queries  
+                            await asyncio.sleep(1.0)  # Reduced wait between API calls
                         
                         balances[addr_type] = balance
                         total_balance += balance
