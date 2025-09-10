@@ -72,31 +72,106 @@ def get_demo_balance(address: str, mnemonic: str) -> float:
         return round(balance_seed / 1000000 * 5.0, 8)  # 0.000001 to 5.0 BTC
     return 0.0
 
-# REAL blockchain balance checking (for production use) - OPTIMIZED for speed
-def get_real_address_balance(address: str) -> float:
-    """Get REAL balance from blockchain.info API with OPTIMIZED rate limiting"""
+# SUPER OPTIMIZED blockchain balance checking with concurrent requests
+import asyncio
+import aiohttp
+from concurrent.futures import ThreadPoolExecutor
+import threading
+
+# Thread-safe cache for balance results
+balance_cache = {}
+cache_lock = threading.Lock()
+
+async def get_real_address_balance_fast(address: str) -> float:
+    """SUPER FAST balance checking with async HTTP and caching"""
     try:
-        print(f"🔍 Checking REAL balance for: {address}")
-        response = requests.get(f"https://blockchain.info/rawaddr/{address}", timeout=8)
-        if response.status_code == 200:
-            data = response.json()
-            balance_satoshi = data.get('final_balance', 0)
-            balance_btc = balance_satoshi / 100000000  # Convert satoshi to BTC
-            print(f"   💰 Balance: {balance_btc:.8f} BTC")
-            return balance_btc
-        elif response.status_code == 429:
-            print(f"   ⏳ Rate limited, waiting briefly...")
-            time.sleep(1)  # Reduced from 2 seconds to 1 second
-            return 0.0
-        else:
-            print(f"   ❌ Error {response.status_code}")
-            return 0.0
-    except requests.exceptions.Timeout:
-        print(f"   ⏰ Timeout checking {address}")
+        # Check cache first
+        with cache_lock:
+            if address in balance_cache:
+                cached_balance = balance_cache[address]
+                print(f"💾 Cache hit for {address}: {cached_balance:.8f} BTC")
+                return cached_balance
+        
+        print(f"🚀 Fast checking balance for: {address}")
+        
+        # Use async HTTP for faster requests
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=5)) as session:
+            async with session.get(f"https://blockchain.info/rawaddr/{address}") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    balance_satoshi = data.get('final_balance', 0)
+                    balance_btc = balance_satoshi / 100000000
+                    
+                    # Cache the result
+                    with cache_lock:
+                        balance_cache[address] = balance_btc
+                    
+                    print(f"   ⚡ Fast balance: {balance_btc:.8f} BTC")
+                    return balance_btc
+                elif response.status == 429:
+                    print(f"   ⏳ Rate limited, brief pause...")
+                    await asyncio.sleep(0.3)  # Very short wait
+                    return 0.0
+                else:
+                    print(f"   ❌ Error {response.status}")
+                    return 0.0
+                    
+    except asyncio.TimeoutError:
+        print(f"   ⏰ Timeout (5s) checking {address}")
         return 0.0
     except Exception as e:
         print(f"   ❌ Error checking {address}: {e}")
         return 0.0
+
+def get_real_address_balance(address: str) -> float:
+    """Sync wrapper for async balance checking"""
+    try:
+        # Run async function in current event loop
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(get_real_address_balance_fast(address))
+    except RuntimeError:
+        # If no event loop, create one
+        return asyncio.run(get_real_address_balance_fast(address))
+
+async def check_multiple_addresses_concurrent(addresses: dict, mnemonic: str, demo_mode: bool) -> dict:
+    """Check multiple addresses concurrently for maximum speed"""
+    balances = {}
+    
+    if demo_mode:
+        # Demo mode - sequential but fast
+        for addr_type, address in addresses.items():
+            if address:
+                balance = get_demo_balance(address, mnemonic)
+                balances[addr_type] = balance
+        return balances
+    
+    # Real mode - concurrent requests for maximum speed
+    print("🚀 Starting concurrent balance checks...")
+    
+    async def check_single_address(addr_type: str, address: str):
+        if address:
+            balance = await get_real_address_balance_fast(address)
+            return addr_type, balance
+        return addr_type, 0.0
+    
+    # Create concurrent tasks for all addresses
+    tasks = []
+    for addr_type, address in addresses.items():
+        if address:
+            task = check_single_address(addr_type, address)
+            tasks.append(task)
+    
+    # Execute all requests concurrently
+    if tasks:
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        for result in results:
+            if isinstance(result, tuple):
+                addr_type, balance = result
+                balances[addr_type] = balance
+            else:
+                print(f"   ⚠️ Error in concurrent check: {result}")
+    
+    return balances
 
 # REAL Bitcoin cryptography functions
 def mnemonic_to_seed(mnemonic: str, passphrase: str = "") -> bytes:
