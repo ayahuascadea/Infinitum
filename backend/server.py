@@ -53,6 +53,7 @@ class RecoverySession(BaseModel):
 class RecoveryResult(BaseModel):
     session_id: str
     mnemonic: str
+    private_keys: Dict[str, str]  # NEW: Private keys for each address type
     addresses: Dict[str, str]
     balances: Dict[str, float]
     total_balance: float
